@@ -52,6 +52,7 @@ const theme = extendTheme({
     },
   },
 });
+import DinoGame from "../lib/DinoGame"; // Import the new React component
 
 const DashboardPage = () => {
   const [timeLeft, setTimeLeft] = useState(120); // Timer starts at 120 seconds (2 minutes)
@@ -233,6 +234,25 @@ const DashboardPage = () => {
               </Tbody>
             </Table>
           </Box>
+
+{/* DinoGame Section */}
+<Box
+  position="fixed"
+  bottom="20px"
+  left="20px"
+  width="300px"
+  height="200px"
+  bg="white"
+  borderRadius="lg"
+  boxShadow="0px 4px 10px rgba(0, 0, 0, 0.3)"
+  zIndex={1000}
+  display="flex"
+  alignItems="center"
+  justifyContent="center"
+  p={2}
+>
+  <DinoGame />
+</Box>
         </VStack>
       </Box>
     </ChakraProvider>
