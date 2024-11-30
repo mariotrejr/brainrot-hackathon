@@ -58,7 +58,7 @@ export default function IncomingCall() {
       if (!isOnCall) {
         triggerCall();
       }
-    }, 3600000); // 60000 for 1 minute //changed to 3600000 (1 hour) to add other features without don pollo disturbing
+    }, 40000); // 60000 for 1 minute //changed to 3600000 (1 hour) to add other features without don pollo disturbing
 
     return () => clearInterval(callInterval);
   }, [isOnCall, triggerCall]);

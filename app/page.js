@@ -1,13 +1,13 @@
 'use client';
 
-import { Box, Heading, Text, Button, Image, Flex } from '@chakra-ui/react';
-import { SignedIn, SignedOut, UserButton, SignUpButton, SignInButton, useAuth } from '@clerk/nextjs';
-import { useState, useEffect } from 'react';
+import { Box, Heading, Text, Button, Flex, VStack } from '@chakra-ui/react';
+import { SignedIn, SignedOut, SignUpButton, SignInButton, useAuth } from '@clerk/nextjs';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const brainrotMemes = [
-  '/images/subway-surfers.gif', // Replace with actual image paths
+  '/images/subway-surfers.gif',
   '/images/don-pollo.jpg',
   '/images/chillguy.webp',
 ];
@@ -25,85 +25,80 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Redirect to dashboard if logged in
+  // Redirect to instructions page if logged in
   useEffect(() => {
     if (isSignedIn) {
-      router.push('/dashboard');
+      router.push('/instructions');
     }
   }, [isSignedIn, router]);
 
   return (
-    <Box
-      bg="linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)"
-      color="white"
-      minH="100vh"
-      display="flex"
-      flexDirection="column"
-      position="relative"
-      overflow="hidden"
-    >
-<IncomingCall />
-
-      {/* Background Animation */}
-      <Box
-        position="absolute"
-        top="0"
-        left="0"
-        width="100%"
-        height="100%"
-        zIndex={0}
-        opacity={0.1}
-        backgroundImage="url('/images/matrix-code.png')" // Replace with a matrix-like background image
-        backgroundRepeat="repeat"
-        backgroundSize="cover"
-      />
-
+    <Box bg="white" color="gray.800" minH="100vh" display="flex" flexDirection="column" py={12} px={6}>
       {/* Main Content */}
-      <Flex
-        as="main"
-        flex="1"
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        textAlign="center"
-        px={4}
-        zIndex={1}
-      >
-        {/* Header */}
-        <Heading
-          size="4xl"
-          fontWeight="bold"
-          mb={4}
-          style={{
-            fontFamily: "'Source Code Pro', monospace",
-            textShadow: '0 4px 10px rgba(255, 255, 255, 0.2)',
-          }}
-        >
-          We R{' '}
-          <span
-            style={{
-              background: 'linear-gradient(to right, cyan, purple)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
+      <Flex as="main" flex="1" direction={{ base: 'column', md: 'row' }} align="center" justify="center" gap={8}>
+        {/* Left Content: Text Section */}
+        <VStack align="start" spacing={6} maxW="lg">
+          <Heading
+            size="2xl"
+            fontWeight="bold"
+            fontFamily="'Source Code Pro', monospace"
+            bgGradient="linear(to-r, cyan.400, purple.400)"
+            bgClip="text"
           >
-            Cooked
-          </span>
-        </Heading>
+            We R Cooked
+          </Heading>
+          <Text fontSize="lg" color="gray.600">
+            Welcome to the ultimate challenge for Computer Science students. Apply to as many internships as possible
+            while fighting off distractions like memes, viral videos, and brainrot-inducing chaos. Are you ready to
+            prove yourself?
+          </Text>
+          <Text fontSize="md" fontStyle="italic" color="gray.500">
+            Join over <strong>1,024</strong> users already battling the chaos.
+          </Text>
+          <SignedOut>
+            <Flex gap={4}>
+              <SignUpButton forceRedirectUrl="/instructions">
+                <Button
+                  colorScheme="cyan"
+                  size="lg"
+                  fontWeight="bold"
+                  _hover={{
+                    bg: 'cyan.500',
+                  }}
+                >
+                  Get Started
+                </Button>
+              </SignUpButton>
+              <SignInButton forceRedirectUrl="/instructions">
+                <Button
+                  colorScheme="purple"
+                  size="lg"
+                  fontWeight="bold"
+                  _hover={{
+                    bg: 'purple.500',
+                  }}
+                >
+                  Log In Now
+                </Button>
+              </SignInButton>
+            </Flex>
+          </SignedOut>
+        </VStack>
 
-        {/* Rotating Meme Section */}
+        {/* Right Content: Rotating Meme Section */}
         <Box
-          w="400px"
+          w={{ base: '100%', md: '400px' }}
           h="500px"
           borderRadius="lg"
           overflow="hidden"
-          mb={6}
           position="relative"
-          boxShadow="0 8px 15px rgba(0, 255, 255, 0.2)"
+          boxShadow="0 8px 15px rgba(0, 0, 0, 0.2)"
         >
           <AnimatePresence>
-            <motion.div
-              key={memeIndex}
+            <motion.img
+              key={brainrotMemes[memeIndex]} // Dynamically change the key based on the current meme
+              src={brainrotMemes[memeIndex]}
+              alt={`Meme ${memeIndex}`}
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '-100%' }}
@@ -112,104 +107,16 @@ export default function LandingPage() {
                 position: 'absolute',
                 width: '100%',
                 height: '100%',
+                objectFit: 'cover',
               }}
-            >
-              <Image
-                src={brainrotMemes[memeIndex]}
-                alt="Brainrot meme"
-                objectFit="cover"
-                w="100%"
-                h="100%"
-              />
-            </motion.div>
+            />
           </AnimatePresence>
         </Box>
-
-        {/* Fun Counter */}
-        <Text fontSize="xl" mb={6} fontFamily="'Source Code Pro', monospace">
-          Over <strong>1,024</strong> users have joined the Brainrot Speed Run!
-        </Text>
-
-        {/* Call-to-Action Buttons */}
-        <SignedOut>
-          <Flex gap={4}>
-            <SignUpButton mode="modal">
-              <Button
-                bgGradient="linear(to-r, cyan.400, blue.400)"
-                color="white"
-                _hover={{
-                  bgGradient: 'linear(to-r, blue.400, cyan.400)',
-                  transform: 'scale(1.05)',
-                  transition: 'all 0.2s ease-in-out',
-                }}
-                _active={{
-                  transform: 'scale(0.95)',
-                }}
-                size="lg"
-                borderRadius="full"
-                px={6}
-                py={4}
-                fontWeight="bold"
-              >
-                Get Started
-              </Button>
-            </SignUpButton>
-
-            <SignInButton mode="modal">
-              <Button
-                bgGradient="linear(to-r, purple.400, pink.400)"
-                color="white"
-                _hover={{
-                  bgGradient: 'linear(to-r, pink.400, purple.400)',
-                  transform: 'scale(1.05)',
-                  transition: 'all 0.2s ease-in-out',
-                }}
-                _active={{
-                  transform: 'scale(0.95)',
-                }}
-                size="lg"
-                borderRadius="full"
-                px={6}
-                py={4}
-                fontWeight="bold"
-              >
-                Log In Now
-              </Button>
-            </SignInButton>
-          </Flex>
-        </SignedOut>
-
-        <SignedIn>
-          <Flex direction="column" alignItems="center" gap={4}>
-            <UserButton />
-            <Button
-              mt={4}
-              bgGradient="linear(to-r, green.400, teal.400)"
-              color="white"
-              _hover={{
-                bgGradient: 'linear(to-r, teal.400, green.400)',
-                transform: 'scale(1.05)',
-                transition: 'all 0.2s ease-in-out',
-              }}
-              _active={{
-                transform: 'scale(0.95)',
-              }}
-              size="lg"
-              borderRadius="full"
-              px={6}
-              py={4}
-              fontWeight="bold"
-              onClick={() => router.push('/dashboard')}
-            >
-              Go to Dashboard
-            </Button>
-          </Flex>
-        </SignedIn>
       </Flex>
 
       {/* Footer */}
-      <Box as="footer" p={4} textAlign="center" zIndex={1}>
-        <Text fontSize="sm" fontFamily="'Source Code Pro', monospace">
+      <Box as="footer" textAlign="center" pt={8}>
+        <Text fontSize="sm" color="gray.500">
           © 2024 We R Cooked. All rights reserved.
         </Text>
       </Box>
