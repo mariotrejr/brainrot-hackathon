@@ -18,6 +18,7 @@ import {
   ChakraProvider,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import DinoGame from "../lib/DinoGame"; // Import the new React component
 
 const contacts = [
   {
@@ -42,7 +43,6 @@ const contacts = [
   },
 ];
 
-// Extend the theme with Comic Sans font
 const theme = extendTheme({
   styles: {
     global: {
@@ -52,7 +52,6 @@ const theme = extendTheme({
     },
   },
 });
-import DinoGame from "../lib/DinoGame"; // Import the new React component
 
 const DashboardPage = () => {
   const [timeLeft, setTimeLeft] = useState(120); // Timer starts at 120 seconds (2 minutes)
@@ -101,6 +100,18 @@ const DashboardPage = () => {
     }
   }, [timeLeft, milliseconds]);
 
+  // Add background music
+  useEffect(() => {
+    const audio = new Audio('/sounds/skibidisong.mp3'); // Update to your correct path
+    audio.loop = true; // Loop the audio
+    audio.play().catch((err) => console.warn('Autoplay failed:', err));
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0; // Reset the audio on component unmount
+    };
+  }, []);
+
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const tableColor = useColorModeValue('white', 'gray.800');
 
@@ -129,11 +140,11 @@ const DashboardPage = () => {
             transition={{ duration: 0.5 }}
             style={{
               position: 'fixed',
-              top: '100px', // Adjusted to center under the navbar
+              top: '100px',
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 1000,
-              width: '90%', // Ensure notification is visible across various screen sizes
+              width: '90%',
               maxWidth: '600px',
               background: 'white',
               padding: '20px 30px',
@@ -189,16 +200,6 @@ const DashboardPage = () => {
           </Text>
         </Box>
 
-        {/* Page Heading */}
-        <Box textAlign="center" mb={12}>
-          <Heading size="2xl" mb={4} color="gray.700">
-            Internship Dashboard
-          </Heading>
-          <Text fontSize="lg" color="gray.500">
-            Browse and apply to top internships.
-          </Text>
-        </Box>
-
         {/* Dashboard Content */}
         <VStack spacing={8} align="stretch">
           <Box bg={tableColor} shadow="lg" borderRadius="lg" p={6} overflowX="auto">
@@ -235,24 +236,24 @@ const DashboardPage = () => {
             </Table>
           </Box>
 
-{/* DinoGame Section */}
-<Box
-  position="fixed"
-  bottom="20px"
-  left="20px"
-  width="300px"
-  height="200px"
-  bg="white"
-  borderRadius="lg"
-  boxShadow="0px 4px 10px rgba(0, 0, 0, 0.3)"
-  zIndex={1000}
-  display="flex"
-  alignItems="center"
-  justifyContent="center"
-  p={2}
->
-  <DinoGame />
-</Box>
+          {/* DinoGame Section */}
+          <Box
+            position="fixed"
+            bottom="20px"
+            left="20px"
+            width="300px"
+            height="200px"
+            bg="white"
+            borderRadius="lg"
+            boxShadow="0px 4px 10px rgba(0, 0, 0, 0.3)"
+            zIndex={1000}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            p={2}
+          >
+            <DinoGame />
+          </Box>
         </VStack>
       </Box>
     </ChakraProvider>
