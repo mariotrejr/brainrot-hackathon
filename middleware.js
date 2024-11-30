@@ -8,6 +8,7 @@ const protectedRoutes = [
   "/profile",         // Example: Profile page
   "/settings",        // Example: Settings page
   "/admin/*",         // Example: Protect all admin subroutes
+  "/dashboard/*",     // Example: Protect all dashboard subroutes
 ];
 
 // Export the middleware configuration
