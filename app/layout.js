@@ -19,12 +19,18 @@ const geistMono = localFont({
 export const metadata = {
   title: 'WeRCooked',
   description: 'Dont even try to apply lil bro',
+  
 };
 
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
+        <head>
+          {/* Add the favicon */}
+          <link rel="icon" href="favicon.ico" sizes="any" />
+          <title>WeRCooked</title>
+        </head>
         <body className={`${geistSans.variable} ${geistMono.variable}`}>
           <Provider>
             <Navbar /> {/* Reusable Navbar */}

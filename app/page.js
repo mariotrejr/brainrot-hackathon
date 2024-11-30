@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const rejectionEmails = [
   '/images/rejection1.webp',
-  '/images/rejection2.jpg', 
+  '/images/rejection2.jpg',
 ];
 
 export default function LandingPage() {
@@ -17,70 +17,17 @@ export default function LandingPage() {
   const router = useRouter();
   const { isSignedIn } = useAuth();
 
-  // Initialize Audio in the Client
+  // Initialize audio and set it to loop
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const audioInstance = new Audio('/chill-guy-song-made-with-Voicemod.mp3');
+      audioInstance.loop = true;
+      audioInstance.play().catch(() => console.log('Autoplay failed.'));
       setAudio(audioInstance);
 
-      // Start the audio muted first to test autoplay
-      audioInstance.muted = true;
-      audioInstance.play().catch((error) => {
-        console.warn('Autoplay failed:', error);
-      });
-
-      // Replay the audio when it ends
-      audioInstance.addEventListener('ended', () => {
-        audioInstance.currentTime = 0;
-        audioInstance.play().catch((error) => {
-          console.warn('Failed to replay audio:', error);
-        });
-      });
-
-      // Unmute after a brief delay
-      setTimeout(() => {
-        audioInstance.muted = false;
-      }, 500); // Unmute after 500ms to test autoplay
-
-      // Clean up the audio and event listeners on unmount
       return () => {
         audioInstance.pause();
         audioInstance.currentTime = 0;
-        audioInstance.removeEventListener('ended', () => {});
-      };
-    }
-  }, []);
-
-  // Initialize Audio in the Client
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const audioInstance = new Audio('/chill-guy-song-made-with-Voicemod.mp3');
-      setAudio(audioInstance);
-
-      // Start the audio muted first to test autoplay
-      audioInstance.muted = true;
-      audioInstance.play().catch((error) => {
-        console.warn('Autoplay failed:', error);
-      });
-
-      // Replay the audio when it ends
-      audioInstance.addEventListener('ended', () => {
-        audioInstance.currentTime = 0;
-        audioInstance.play().catch((error) => {
-          console.warn('Failed to replay audio:', error);
-        });
-      });
-
-      // Unmute after a brief delay
-      setTimeout(() => {
-        audioInstance.muted = false;
-      }, 500); // Unmute after 500ms to test autoplay
-
-      // Clean up the audio and event listeners on unmount
-      return () => {
-        audioInstance.pause();
-        audioInstance.currentTime = 0;
-        audioInstance.removeEventListener('ended', () => {});
       };
     }
   }, []);
@@ -115,8 +62,30 @@ export default function LandingPage() {
       px={6}
       fontFamily="'Comic Sans MS', 'Comic Sans', cursive"
     >
-      {/* Fixed Subway Surfer GIF in Bottom-Right Corner */}
+      {/* Fixed Crying Guy GIF Above Subway Surfers */}
       <motion.img
+        src="/images/cryingguy.gif"
+        alt="Crying Guy"
+        style={{
+          position: 'fixed',
+          bottom: '200px', // Higher position
+          right: '20px',
+          width: '150px',
+          height: 'auto',
+          zIndex: 1001,
+        }}
+        animate={{
+          rotate: [0, 5, -5, 0],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          repeatType: 'loop',
+        }}
+      />
+
+      {/* Fixed Subway Surfer GIF */}
+      <img
         src="/images/subway-surfers.gif"
         alt="Subway Surfer"
         style={{
@@ -127,17 +96,9 @@ export default function LandingPage() {
           height: 'auto',
           zIndex: 1000,
         }}
-        animate={{
-          rotate: [0, 10, -10, 0],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          repeatType: 'loop',
-        }}
       />
 
-      {/* Fixed Stacked Gifs on Bottom-Left Corner */}
+      {/* Stacked Gifs on Bottom-Left Corner */}
       <Box
         position="fixed"
         bottom="20px"
@@ -180,22 +141,6 @@ export default function LandingPage() {
             repeatType: 'loop',
           }}
         />
-        <motion.img
-          src="/images/chillguy.webp"
-          alt="Chill Guy"
-          style={{
-            width: '120px',
-            height: 'auto',
-          }}
-          animate={{
-            rotate: [0, 5, -5, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            repeatType: 'loop',
-          }}
-        />
       </Box>
 
       {/* Main Content */}
@@ -227,8 +172,13 @@ export default function LandingPage() {
             Cooked
           </motion.span>
         </Heading>
-        <Text fontSize="lg" color="white">
-          Welcome to the ultimate challenge for Computer Science students. Apply to as many internships as possible
+        <Text
+          fontSize="lg"
+          color="white"
+          transform="rotate(-5deg)"
+          textShadow="2px 2px 5px rgba(0, 0, 0, 0.6)"
+        >
+             Welcome to the ultimate challenge for Computer Science students. Apply to as many internships as possible
           while fighting off distractions like memes, viral videos, and brainrot-inducing chaos. Are you ready to
           prove yourself?
         </Text>
@@ -267,36 +217,51 @@ export default function LandingPage() {
         </SignedOut>
       </VStack>
 
-      {/* Rejection Emails Section */}
-      <Box
-        w="90%"
-        maxW="1200px"
-        mx="auto"
-        mt={8}
-        borderRadius="lg"
-        overflow="hidden"
-        position="relative"
-        boxShadow="0 8px 15px rgba(0, 0, 0, 0.5)"
-        bg="whiteAlpha.200"
-        p={4}
-      >
-        <AnimatePresence>
-          <motion.img
-            key={rejectionEmails[imageIndex]}
-            src={rejectionEmails[imageIndex]}
-            alt={`Rejection Email ${imageIndex}`}
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 50 }}
-            transition={{ duration: 1, ease: 'easeInOut' }}
-            style={{
-              display: 'block',
-              width: '100%',
-              height: 'auto',
-            }}
-          />
-        </AnimatePresence>
-      </Box>
+     {/* Rejection Emails Section */}
+<Text
+  fontSize="2xl"
+  fontWeight="bold"
+  textAlign="center"
+  mb={4}
+  transform="rotate(-10deg)"
+  textShadow="2px 2px 5px rgba(0, 0, 0, 0.5)"
+  color="red.300"
+>
+  This is you! 🥲
+</Text>
+<Box
+  w="90%"
+  maxW="1200px"
+  mx="auto"
+  borderRadius="lg"
+  overflow="hidden"
+  position="relative"
+  boxShadow="0 8px 15px rgba(0, 0, 0, 0.5)"
+  bg="whiteAlpha.200"
+  p={4}
+>
+  <AnimatePresence>
+    <motion.img
+      key={rejectionEmails[imageIndex]}
+      src={rejectionEmails[imageIndex]}
+      alt={`Rejection Email ${imageIndex}`}
+      initial={{ x: 100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -100, opacity: 0 }}
+      transition={{
+        duration: 1.2, // Increased duration for smoother transition
+        ease: 'easeInOut', // Smooth easing function
+      }}
+      style={{
+        display: 'block',
+        width: '100%',
+        height: 'auto',
+        borderRadius: '10px', // Add some rounding for a softer look
+        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', // Subtle shadow
+      }}
+    />
+  </AnimatePresence>
+</Box>
 
       {/* Footer */}
       <Box as="footer" textAlign="center" pt={8} zIndex={1}>

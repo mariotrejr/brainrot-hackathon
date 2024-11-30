@@ -23,12 +23,12 @@ const contacts = [
   {
     name: 'FreakBob',
     message: 'I miss you ❤️',
-    image: '/images/freakbob.png',
+    image: '/images/freakbob.jpg',
   },
   {
     name: 'John Pork',
     message: 'Can you please give me my kids back?',
-    image: '/images/john-pork.png',
+    image: '/images/johnpork.jpeg',
   },
   {
     name: 'Karen',

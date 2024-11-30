@@ -43,24 +43,44 @@ export default function InstructionsPage() {
         >
           💡 Pro Tip: The more chaotic your focus, the higher your score multiplier!
         </Text>
-        <Button
-          colorScheme="pink"
-          size="lg"
-          px={12}
-          py={6}
-          fontWeight="bold"
-          fontSize="xl"
-          borderRadius="full"
-          textTransform="uppercase"
-          _hover={{
-            bgGradient: 'linear(to-r, orange.400, red.400)',
-            transform: 'scale(1.1) rotate(5deg)',
-            boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.8)',
-          }}
-          onClick={() => router.push('/dashboard')}
-        >
-          Start the Madness 😈
-        </Button>
+        <VStack spacing={4}>
+          <Button
+            colorScheme="pink"
+            size="lg"
+            px={12}
+            py={6}
+            fontWeight="bold"
+            fontSize="xl"
+            borderRadius="full"
+            textTransform="uppercase"
+            _hover={{
+              bgGradient: 'linear(to-r, orange.400, red.400)',
+              transform: 'scale(1.1) rotate(5deg)',
+              boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.8)',
+            }}
+            onClick={() => router.push('/dashboard')}
+          >
+            Start the Madness 😈
+          </Button>
+          <Button
+            colorScheme="teal"
+            size="lg"
+            px={12}
+            py={6}
+            fontWeight="bold"
+            fontSize="xl"
+            borderRadius="full"
+            textTransform="uppercase"
+            _hover={{
+              bgGradient: 'linear(to-r, blue.400, green.400)',
+              transform: 'scale(1.1) rotate(-5deg)',
+              boxShadow: '0px 0px 15px rgba(0, 255, 255, 0.8)',
+            }}
+            onClick={() => router.push('/brainrot-quiz')}
+          >
+            Test How Cooked You Are 🤔
+          </Button>
+        </VStack>
       </VStack>
     </Box>
   );

@@ -3,8 +3,11 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { Box, Flex, Button, Text, Image } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
+  const router = useRouter();
+
   return (
     <Box
       as="header"
@@ -29,6 +32,8 @@ export default function Navbar() {
               repeat: Infinity,
               repeatType: 'loop',
             }}
+            style={{ cursor: 'pointer' }}
+            onClick={() => router.push('/instructions')} // Navigate to /instructions on click
           >
             <Image
               src="/images/elmoonfire.webp"
