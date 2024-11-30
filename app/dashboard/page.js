@@ -17,6 +17,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import IncomingCall from '../IncomingCall/IncomingCall';
+import DinoGame from "../lib/DinoGame"; // Import the new React component
 
 const DashboardPage = () => {
   const [timeLeft, setTimeLeft] = useState(120); // Timer starts at 120 seconds (2 minutes)
@@ -116,6 +117,14 @@ const DashboardPage = () => {
             </Tbody>
           </Table>
         </Box>
+
+     {/* DinoGame Section */}
+<Box bg={tableColor} shadow="lg" borderRadius="lg" p={6} mt={8}>
+  <Heading as="h2" size="lg" mb={6} textAlign="center" color="teal.500">
+    play now, don't apply.. u r cooked lil bro
+  </Heading>
+  <DinoGame /> 
+</Box>   
       </VStack>
     </Box>
   );
