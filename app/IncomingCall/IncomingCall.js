@@ -113,18 +113,43 @@ export default function IncomingCall() {
             />
           </Box>
 
-          {/* ElevenLabs Widget */}
+          {/* ElevenLabs Widget and Decline Button */}
           <Box
             id="widget-container"
             style={{
-              marginTop: '10px', // Moved widget closer to the avatar
+              marginTop: '20px', // Moved widget closer to the avatar
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
               width: '100%',
               position: 'relative',
+              transform: 'translateX(35px)', // Shift the buttons to the right
             }}
           >
+            {/* Decline Button */}
+            {isCalling && (
+              <Box
+                style={{
+                  position: 'static',
+                  width: '100px', // Same width as widget
+                  height: '50px', // Same height as widget
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  borderRadius: '15px',
+                  backgroundColor: '#ff4d4f', // Red background
+                  color: 'white',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  marginRight: '10px', // Add space between Decline and Accept
+                }}
+                onClick={declineCall}
+              >
+                Decline
+              </Box>
+            )}
+
             <elevenlabs-convai
               agent-id="qYJDQ63g0Z07cBgoT0yH"
               style={{
@@ -136,7 +161,6 @@ export default function IncomingCall() {
                 justifyContent: 'center',
                 textAlign: 'center',
                 borderRadius: '15px',
-                color: 'white',
                 fontWeight: 'bold',
                 cursor: 'pointer',
               }}
