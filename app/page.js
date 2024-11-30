@@ -8,14 +8,49 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const brainrotMemes = [
   '/images/subway-surfers.gif',
-  '/images/don-pollo.jpg',
+  '/images/don-pollo.jpg', 
   '/images/chillguy.webp',
 ];
 
 export default function LandingPage() {
   const [memeIndex, setMemeIndex] = useState(0);
+  const [audio, setAudio] = useState(null);
   const router = useRouter();
   const { isSignedIn } = useAuth();
+
+  // Initialize Audio in the Client
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const audioInstance = new Audio('/chill-guy-song-made-with-Voicemod.mp3');
+      setAudio(audioInstance);
+
+      // Start the audio muted first to test autoplay
+      audioInstance.muted = true;
+      audioInstance.play().catch((error) => {
+        console.warn('Autoplay failed:', error);
+      });
+
+      // Replay the audio when it ends
+      audioInstance.addEventListener('ended', () => {
+        audioInstance.currentTime = 0;
+        audioInstance.play().catch((error) => {
+          console.warn('Failed to replay audio:', error);
+        });
+      });
+
+      // Unmute after a brief delay
+      setTimeout(() => {
+        audioInstance.muted = false;
+      }, 500); // Unmute after 500ms to test autoplay
+
+      // Clean up the audio and event listeners on unmount
+      return () => {
+        audioInstance.pause();
+        audioInstance.currentTime = 0;
+        audioInstance.removeEventListener('ended', () => {});
+      };
+    }
+  }, []);
 
   // Rotate memes every 3 seconds
   useEffect(() => {
