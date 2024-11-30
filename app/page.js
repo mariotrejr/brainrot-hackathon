@@ -13,6 +13,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import IncomingCall from './IncomingCall/IncomingCall';
 
 export default function LandingPage() {
   const bgColor = useColorModeValue('gray.900', 'black');
@@ -21,6 +22,8 @@ export default function LandingPage() {
 
   return (
     <Box bg={bgColor} minH="100vh" py={10} px={6} color={textColor}>
+<IncomingCall />
+
       {/* Navbar */}
       <Box bg="gray.800" w="full" py={4} px={8} shadow="sm">
         <HStack justify="space-between" align="center" maxW="6xl" mx="auto">
@@ -60,7 +63,7 @@ export default function LandingPage() {
                 We R Cooked
               </Heading>
               <Text fontSize="lg" maxW="lg" color="gray.400">
-                It might be too late for you... but there's still time to apply for internships and laugh at memes while you’re at it.
+                It might be too late for you... but there's still time to apply for internships and laugh at memes while you're at it.
               </Text>
             </VStack>
 
@@ -86,7 +89,7 @@ export default function LandingPage() {
               {/* Left Content */}
               <VStack align="start" spacing={4} flex="1">
                 <Heading size="lg" fontWeight="semibold">
-                  Apply Before It’s Too Late
+                  Apply Before It's Too Late
                 </Heading>
                 <Box
                   as="img"
@@ -150,7 +153,7 @@ export default function LandingPage() {
                 We R Cooked
               </Heading>
               <Text fontSize="lg" maxW="lg" color="gray.400">
-                Don’t let it be too late for you. Sign in to start applying for internships and enjoying the best tech memes!
+                Don't let it be too late for you. Sign in to start applying for internships and enjoying the best tech memes!
               </Text>
             </VStack>
 
