@@ -1,5 +1,5 @@
 'use client';
-import { withAuth } from "@clerk/nextjs";
+
 import React from 'react';
 import {
   Box,
@@ -83,49 +83,51 @@ const DashboardPage = () => {
       </Box>
 
       {/* Dashboard Content */}
-      <VStack spacing={8} align="stretch">
-        <Box
-          bg={tableColor}
-          shadow="md"
-          borderRadius="lg"
-          p={6}
-          overflowX="auto"
-        >
-          <Heading as="h2" size="md" mb={4}>
-            Available Internships
-          </Heading>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Company</Th>
-                <Th>Position</Th>
-                <Th>Location</Th>
-                <Th>Deadline</Th>
-                <Th>Action</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {internships.map((internship) => (
-                <Tr key={internship.id}>
-                  <Td>{internship.company}</Td>
-                  <Td>{internship.position}</Td>
-                  <Td>{internship.location}</Td>
-                  <Td>{internship.deadline}</Td>
-                  <Td>
-                    <Button
-                      colorScheme="teal"
-                      size="sm"
-                      onClick={() => alert(`Applying to ${internship.position}`)}
-                    >
-                      Apply
-                    </Button>
-                  </Td>
+      <SignedIn>
+        <VStack spacing={8} align="stretch">
+          <Box
+            bg={tableColor}
+            shadow="md"
+            borderRadius="lg"
+            p={6}
+            overflowX="auto"
+          >
+            <Heading as="h2" size="md" mb={4}>
+              Available Internships
+            </Heading>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Company</Th>
+                  <Th>Position</Th>
+                  <Th>Location</Th>
+                  <Th>Deadline</Th>
+                  <Th>Action</Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Box>
-      </VStack>
+              </Thead>
+              <Tbody>
+                {internships.map((internship) => (
+                  <Tr key={internship.id}>
+                    <Td>{internship.company}</Td>
+                    <Td>{internship.position}</Td>
+                    <Td>{internship.location}</Td>
+                    <Td>{internship.deadline}</Td>
+                    <Td>
+                      <Button
+                        colorScheme="teal"
+                        size="sm"
+                        onClick={() => alert(`Applying to ${internship.position}`)}
+                      >
+                        Apply
+                      </Button>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Box>
+        </VStack>
+      </SignedIn>
 
       {/* Signed-Out Message */}
       <SignedOut>
@@ -137,6 +139,4 @@ const DashboardPage = () => {
   );
 };
 
-export default withAuth(DashboardPage, {
-    redirectTo: "/sign-in", // Redirects to the sign-in page if not authenticated
-  });
+export default DashboardPage;
