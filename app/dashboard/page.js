@@ -118,13 +118,24 @@ const DashboardPage = () => {
           </Table>
         </Box>
 
-     {/* DinoGame Section */}
-<Box bg={tableColor} shadow="lg" borderRadius="lg" p={6} mt={8}>
-  <Heading as="h2" size="lg" mb={6} textAlign="center" color="teal.500">
-    play now, don't apply.. u r cooked lil bro
-  </Heading>
-  <DinoGame /> 
-</Box>   
+{/* DinoGame Section */}
+<Box
+  position="fixed"
+  bottom="20px"
+  left="20px"
+  width="300px"
+  height="200px"
+  bg="white"
+  borderRadius="lg"
+  boxShadow="0px 4px 10px rgba(0, 0, 0, 0.3)"
+  zIndex={1000}
+  display="flex"
+  alignItems="center"
+  justifyContent="center"
+  p={2}
+>
+  <DinoGame />
+</Box>
       </VStack>
     </Box>
   );
