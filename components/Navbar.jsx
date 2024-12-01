@@ -1,7 +1,7 @@
 'use client';
 
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
-import { Box, Flex, Button, Text, Image } from '@chakra-ui/react';
+import { Box, Flex, Button, Text, Image, Link as ChakraLink } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
@@ -73,7 +73,7 @@ export default function Navbar() {
           </Text>
         </Flex>
 
-        {/* Authentication Section */}
+        {/* Navigation and Authentication Section */}
         <Flex gap={4} align="center">
           <SignedOut>
             <SignInButton mode="modal">
@@ -89,21 +89,63 @@ export default function Navbar() {
                   transform: 'scale(0.95)',
                 }}
               >
-                🚀 Sign In
+                🚀 Sign In / Create Account
               </Button>
             </SignInButton>
           </SignedOut>
+
           <SignedIn>
+            {/* Navigation Links */}
+            <Flex gap={4} align="center">
+              <ChakraLink
+                onClick={() => router.push('/brainrot-quiz')}
+                fontWeight="bold"
+                color="white"
+                _hover={{
+                  color: 'yellow.300',
+                  textDecoration: 'underline',
+                  transform: 'scale(1.1)',
+                }}
+              >
+                Quiz 🧠
+              </ChakraLink>
+              <ChakraLink
+                onClick={() => router.push('/leaderboard')}
+                fontWeight="bold"
+                color="white"
+                _hover={{
+                  color: 'yellow.300',
+                  textDecoration: 'underline',
+                  transform: 'scale(1.1)',
+                }}
+              >
+                Leaderboard 🏆
+              </ChakraLink>
+              <ChakraLink
+                onClick={() => router.push('/instructions')}
+                fontWeight="bold"
+                color="white"
+                _hover={{
+                  color: 'yellow.300',
+                  textDecoration: 'underline',
+                  transform: 'scale(1.1)',
+                }}
+              >
+                Speedrun ⚡
+              </ChakraLink>
+            </Flex>
+
+            {/* User Profile */}
             <UserButton
               userProfileMode="modal"
               showName={false}
-              size="md"
+              size="lg"
               border="2px solid white"
               bgGradient="linear(to-r, teal.400, blue.500)"
               _hover={{
-                transform: 'scale(1.2)',
+                transform: 'scale(1.3)',
                 bgGradient: 'linear(to-r, blue.500, teal.400)',
-                boxShadow: '0 0 15px rgba(0, 255, 255, 0.8)',
+                boxShadow: '0 0 20px rgba(0, 255, 255, 0.8)',
               }}
               _active={{
                 transform: 'scale(0.9)',

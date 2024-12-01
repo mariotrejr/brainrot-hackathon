@@ -11,9 +11,11 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.0.0",
     "@chakra-ui/react": "^2.8.0",
+    "@clerk/backend": "^1.18.0",
     "@clerk/nextjs": "^6.5.1",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
+    "firebase": "^11.0.2",
     "framer-motion": "^7.10.3",
     "next": "15.0.3",
     "next-themes": "^0.4.3",
