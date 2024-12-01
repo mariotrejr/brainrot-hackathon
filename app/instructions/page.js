@@ -2,9 +2,18 @@
 
 import { Box, Heading, Text, Button, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 
 export default function InstructionsPage() {
   const router = useRouter();
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // Play the chicken.mp3 audio on a loop when the component mounts
+    if (audioRef.current) {
+      audioRef.current.play().catch((err) => console.error('Audio playback failed:', err));
+    }
+  }, []);
 
   return (
     <Box
@@ -16,6 +25,9 @@ export default function InstructionsPage() {
       fontFamily="'Comic Sans MS', cursive, sans-serif"
       color="yellow.50"
     >
+      {/* Audio Element */}
+      <audio ref={audioRef} src="/sounds/chiken.mp3" loop />
+
       <VStack spacing={8} align="center">
         <Heading
           size="2xl"

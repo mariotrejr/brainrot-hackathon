@@ -1,6 +1,18 @@
 'use client';
 
-import { Box, Heading, Text, Button, VStack, Flex, Modal, ModalOverlay, ModalContent, ModalBody, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  VStack,
+  Flex,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { SignedIn, SignedOut, SignUpButton, SignInButton, useAuth } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,6 +21,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 const rejectionEmails = [
   '/images/rejection1.webp',
   '/images/rejection2.jpg',
+  '/images/rejection3.jpg',
+  '/images/rejection4.jpg',
 ];
 
 export default function LandingPage() {
@@ -18,7 +32,6 @@ export default function LandingPage() {
   const { isSignedIn } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Initialize audio instance but do not play it until user interacts
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const audioInstance = new Audio('/chill-guy-song-made-with-Voicemod.mp3');
@@ -27,7 +40,6 @@ export default function LandingPage() {
     }
   }, []);
 
-  // Rotate rejection emails every 3 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setImageIndex((prevIndex) => (prevIndex + 1) % rejectionEmails.length);
@@ -35,14 +47,12 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Redirect to instructions page if logged in
   useEffect(() => {
     if (isSignedIn) {
       router.push('/instructions');
     }
   }, [isSignedIn, router]);
 
-  // Open the sound enable modal on page load
   useEffect(() => {
     onOpen();
   }, [onOpen]);
@@ -69,7 +79,6 @@ export default function LandingPage() {
       px={6}
       fontFamily="'Comic Sans MS', 'Comic Sans', cursive"
     >
-      {/* Modal for enabling sound */}
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
@@ -102,7 +111,6 @@ export default function LandingPage() {
         </ModalContent>
       </Modal>
 
-      {/* Fixed Crying Guy GIF Above Subway Surfers */}
       <motion.img
         src="/images/cryingguy.gif"
         alt="Crying Guy"
@@ -124,7 +132,28 @@ export default function LandingPage() {
         }}
       />
 
-      {/* Fixed Subway Surfer GIF */}
+      {/* Add mewing.gif above the crying guy */}
+      <motion.img
+        src="/images/mewing.gif"
+        alt="Mewing"
+        style={{
+          position: 'fixed',
+          bottom: '380px',
+          right: '20px',
+          width: '100px',
+          height: 'auto',
+          zIndex: 1002,
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+        }}
+        transition={{
+          duration: 1,
+          repeat: Infinity,
+          repeatType: 'loop',
+        }}
+      />
+
       <img
         src="/images/subway-surfers.gif"
         alt="Subway Surfer"
@@ -138,7 +167,6 @@ export default function LandingPage() {
         }}
       />
 
-      {/* Stacked Gifs on Bottom-Left Corner */}
       <Box
         position="fixed"
         bottom="20px"
@@ -181,15 +209,19 @@ export default function LandingPage() {
             repeatType: 'loop',
           }}
         />
+        {/* Add granolobar.webp above the dancing Spongebob */}
+        <img
+          src="/images/granolobar.webp"
+          alt="Granola Bar"
+          style={{
+            width: '150px',
+            height: 'auto',
+          }}
+        />
       </Box>
 
-      {/* Main Content */}
       <VStack spacing={6} textAlign="center" zIndex={1}>
-        <Heading
-          size="2xl"
-          fontWeight="bold"
-          fontFamily="'Comic Sans MS', 'Comic Sans', cursive"
-        >
+        <Heading size="2xl" fontWeight="bold">
           We R{' '}
           <motion.span
             style={{
@@ -211,12 +243,7 @@ export default function LandingPage() {
             Cooked
           </motion.span>
         </Heading>
-        <Text
-          fontSize="lg"
-          color="white"
-          transform="rotate(-5deg)"
-          textShadow="2px 2px 5px rgba(0, 0, 0, 0.6)"
-        >
+        <Text fontSize="lg" color="white" transform="rotate(-5deg)">
           Welcome to the ultimate challenge for Computer Science students. Apply to as many internships as possible
           while fighting off distractions like memes, viral videos, and brainrot-inducing chaos. Are you ready to
           prove yourself?
@@ -302,14 +329,6 @@ export default function LandingPage() {
         </AnimatePresence>
       </Box>
 
-      {/* Footer */}
-      <Box as="footer" textAlign="center" pt={8} zIndex={1}>
-        <Text fontSize="sm" color="whiteAlpha.800">
-          © 2024 We R Cooked. All rights reserved.
-        </Text>
-      </Box>
-
-      {/* Keyframe Animations */}
       <style jsx global>{`
         @keyframes gradientAnimation {
           0% {
