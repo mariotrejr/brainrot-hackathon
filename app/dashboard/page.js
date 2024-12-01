@@ -18,7 +18,7 @@ import {
   ChakraProvider,
 } from '@chakra-ui/react';
 import IncomingCall from '../IncomingCall/IncomingCall';
-import FAANGTable from '@/components/FaangTable';
+import FAANGTable from '@/components/FAANGTable';
 import { motion } from 'framer-motion';
 import DinoGame from "../lib/DinoGame"; // Import the new React component
 

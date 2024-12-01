@@ -17,7 +17,7 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { useAuth } from '@clerk/nextjs';
 import { signInWithCustomToken } from 'firebase/auth';
 import DinoGame from '../lib/DinoGame'; // Import the new React component
-import FAANGTable from '@/components/FaangTable';
+import FAANGTable from '@/components/FAANGTable';
 import { motion } from 'framer-motion';
 import IncomingCall from '../IncomingCall/IncomingCall';
 
