@@ -17,6 +17,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import IncomingCall from '../IncomingCall/IncomingCall';
+import FAANGTable from '@/components/FaangTable';
 
 const DashboardPage = () => {
   const [timeLeft, setTimeLeft] = useState(120); // Timer starts at 120 seconds (2 minutes)
@@ -116,6 +117,9 @@ const DashboardPage = () => {
             </Tbody>
           </Table>
         </Box>
+      </VStack>
+      <VStack>
+        <FAANGTable/>
       </VStack>
     </Box>
   );
