@@ -58,7 +58,7 @@ export default function InstructionsPage() {
               transform: 'scale(1.1) rotate(5deg)',
               boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.8)',
             }}
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/engines')}
           >
             Start the Madness 😈
           </Button>
@@ -79,6 +79,24 @@ export default function InstructionsPage() {
             onClick={() => router.push('/brainrot-quiz')}
           >
             Test How Cooked You Are 🤔
+          </Button>
+          <Button
+            colorScheme="yellow"
+            size="lg"
+            px={12}
+            py={6}
+            fontWeight="bold"
+            fontSize="xl"
+            borderRadius="full"
+            textTransform="uppercase"
+            _hover={{
+              bgGradient: 'linear(to-r, yellow.400, orange.400)',
+              transform: 'scale(1.1) rotate(3deg)',
+              boxShadow: '0px 0px 15px rgba(255, 255, 0, 0.8)',
+            }}
+            onClick={() => router.push('/leaderboard')}
+          >
+            View the Leaderboard 🏆
           </Button>
         </VStack>
       </VStack>

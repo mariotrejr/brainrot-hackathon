@@ -24,5 +24,6 @@ export const config = {
     '/(api|trpc)(.*)',
 
     'sign-in(/.*)',    // Protect the sign-in page
+    'dashboard(/.*)',  // Protect the dashboard page
   ],
 };
