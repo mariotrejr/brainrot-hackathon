@@ -204,39 +204,7 @@ const DashboardPage = () => {
 
         {/* Dashboard Content */}
         <VStack spacing={8} align="stretch">
-          <Box bg={tableColor} shadow="lg" borderRadius="lg" p={6} overflowX="auto">
-            <Heading as="h2" size="lg" mb={6}>
-              Available Internships
-            </Heading>
-            <Table variant="striped" colorScheme="teal">
-              <Thead>
-                <Tr>
-                  <Th>Company</Th>
-                  <Th>Position</Th>
-                  <Th>Location</Th>
-                  <Th>Deadline</Th>
-                  <Th>Action</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {[{ id: 1, company: 'Google', position: 'Software Intern', location: 'CA', deadline: '2024-12-15' },
-                  { id: 2, company: 'Microsoft', position: 'Backend Intern', location: 'WA', deadline: '2024-12-20' },
-                ].map((item) => (
-                  <Tr key={item.id}>
-                    <Td>{item.company}</Td>
-                    <Td>{item.position}</Td>
-                    <Td>{item.location}</Td>
-                    <Td>{item.deadline}</Td>
-                    <Td>
-                      <Button colorScheme="teal" size="sm">
-                        Apply
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </Box>
+          <FAANGTable/>
 
           {/* DinoGame Section */}
           <Box
