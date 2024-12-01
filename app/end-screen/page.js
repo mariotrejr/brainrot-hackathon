@@ -155,7 +155,7 @@ const EndScreen = () => {
               transform: 'scale(1.1)',
               boxShadow: '0 0 20px rgba(0, 255, 255, 0.8)',
             }}
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/speedrun')}
           >
             Try Again? 🔁
           </Button>

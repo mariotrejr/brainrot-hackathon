@@ -13,10 +13,15 @@ import {
   Button,
   Link,
   useColorModeValue,
+  Text,
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 
-const FAANGTable = () => {
+const MotionBox = motion(Box);
+
+const FAANGTable = ({ addAuraPoints }) => {
   const [internships, setInternships] = useState([]);
+  const [completed, setCompleted] = useState({}); // Track completed rows
 
   useEffect(() => {
     const fetchMarkdown = async () => {
@@ -29,7 +34,6 @@ const FAANGTable = () => {
         }
         const markdown = await response.text();
 
-        // Extract and parse the FAANG table
         const faangTableMarkdown = extractFAANGTable(markdown);
         const parsedTable = parseMarkdownTable(faangTableMarkdown);
         setInternships(parsedTable);
@@ -76,40 +80,80 @@ const FAANGTable = () => {
   };
 
   const parseCell = (cell) => {
-    const linkMatch = cell.match(/<a href="(.*?)">(.*?)<\/a>/); // Extract links
+    const linkMatch = cell.match(/<a href="([^"]*)">(.*?)<\/a>/);
     if (linkMatch) {
       return { text: stripHTMLTags(linkMatch[2]), url: linkMatch[1] };
     }
-    return { text: stripHTMLTags(cell), url: null }; // Handle non-link cells
+    return { text: stripHTMLTags(cell), url: null };
   };
 
   const stripHTMLTags = (str) => {
-    // Matches and removes any HTML tags 
     return str.replace(/<[^>]*>/g, '').trim();
+  };
+
+  const handleDone = (index) => {
+    if (!completed[index]) {
+      setCompleted((prev) => ({ ...prev, [index]: true }));
+      addAuraPoints(100);
+    }
   };
 
   const bgColor = useColorModeValue('white', 'gray.800');
 
   return (
-    <Box bg={bgColor} shadow="lg" borderRadius="lg" p={6} overflowX="auto">
-      <Heading as="h2" size="lg" mb={6}>
-        USA SWE Internships 🦅
+    <MotionBox
+      bg={bgColor}
+      shadow="lg"
+      borderRadius="lg"
+      p={6}
+      overflowX="auto"
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8 }}
+    >
+      <Heading
+        as="h2"
+        size="lg"
+        mb={6}
+        textAlign="center"
+        bgGradient="linear(to-r, orange.400, pink.400)"
+        bgClip="text"
+        textShadow="0px 0px 10px rgba(255, 0, 255, 0.8)"
+      >
+        🌟 USA SWE Internships 🦅
       </Heading>
-      <Table variant="striped" colorScheme="teal">
+      <Table variant="striped" colorScheme="pink">
         <Thead>
           <Tr>
-            <Th>Company</Th>
-            <Th>Position</Th>
-            <Th>Location</Th>
-            <Th>Posting</Th>
+            <Th textAlign="center" color="pink.500">
+              Company
+            </Th>
+            <Th textAlign="center" color="pink.500">
+              Position
+            </Th>
+            <Th textAlign="center" color="pink.500">
+              Location
+            </Th>
+            <Th textAlign="center" color="pink.500">
+              Posting
+            </Th>
+            <Th textAlign="center" color="pink.500">
+              Action
+            </Th>
           </Tr>
         </Thead>
         <Tbody>
           {internships.map((item, idx) => (
-            <Tr key={idx}>
+            <Tr key={idx} bg={completed[idx] ? 'gray.700' : 'white'}>
               <Td>
                 {item.company.url ? (
-                  <Link href={item.company.url} isExternal>
+                  <Link
+                    href={item.company.url}
+                    isExternal
+                    fontWeight="bold"
+                    color="teal.500"
+                    _hover={{ textDecoration: 'underline', color: 'teal.300' }}
+                  >
                     {item.company.text}
                   </Link>
                 ) : (
@@ -118,7 +162,13 @@ const FAANGTable = () => {
               </Td>
               <Td>
                 {item.position.url ? (
-                  <Link href={item.position.url} isExternal>
+                  <Link
+                    href={item.position.url}
+                    isExternal
+                    fontWeight="bold"
+                    color="teal.500"
+                    _hover={{ textDecoration: 'underline', color: 'teal.300' }}
+                  >
                     {item.position.text}
                   </Link>
                 ) : (
@@ -132,22 +182,38 @@ const FAANGTable = () => {
                     as={Link}
                     href={item.posting.url}
                     isExternal
-                    colorScheme="teal"
+                    colorScheme="purple"
                     size="sm"
+                    _hover={{ transform: 'scale(1.1)' }}
                   >
-                    Apply
+                    Apply 🚀
                   </Button>
                 ) : (
-                  'N/A'
+                  <Text fontStyle="italic" color="gray.500">
+                    N/A
+                  </Text>
                 )}
+              </Td>
+              <Td>
+                <Button
+                  colorScheme={completed[idx] ? 'gray' : 'green'}
+                  size="sm"
+                  onClick={() => handleDone(idx)}
+                  isDisabled={completed[idx]}
+                  _hover={{
+                    transform: completed[idx] ? 'none' : 'scale(1.1)',
+                    bg: completed[idx] ? 'gray.600' : 'green.300',
+                  }}
+                >
+                  {completed[idx] ? '✅ Done' : '🎯 Complete'}
+                </Button>
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
-    </Box>
+    </MotionBox>
   );
 };
 
 export default FAANGTable;
-
