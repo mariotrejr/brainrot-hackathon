@@ -1,6 +1,18 @@
 'use client';
 
-import { Box, Heading, Text, Button, Flex, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  VStack,
+  Flex,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { SignedIn, SignedOut, SignUpButton, SignInButton, useAuth } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,6 +21,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 const rejectionEmails = [
   '/images/rejection1.webp',
   '/images/rejection2.jpg',
+  '/images/rejection3.jpg',
+  '/images/rejection4.jpg',
 ];
 
 export default function LandingPage() {
@@ -16,23 +30,16 @@ export default function LandingPage() {
   const [audio, setAudio] = useState(null);
   const router = useRouter();
   const { isSignedIn } = useAuth();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Initialize audio and set it to loop
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const audioInstance = new Audio('/chill-guy-song-made-with-Voicemod.mp3');
       audioInstance.loop = true;
-      audioInstance.play().catch(() => console.log('Autoplay failed.'));
       setAudio(audioInstance);
-
-      return () => {
-        audioInstance.pause();
-        audioInstance.currentTime = 0;
-      };
     }
   }, []);
 
-  // Rotate rejection emails every 3 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setImageIndex((prevIndex) => (prevIndex + 1) % rejectionEmails.length);
@@ -40,12 +47,22 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Redirect to instructions page if logged in
   useEffect(() => {
     if (isSignedIn) {
       router.push('/instructions');
     }
   }, [isSignedIn, router]);
+
+  useEffect(() => {
+    onOpen();
+  }, [onOpen]);
+
+  const handleEnableSound = () => {
+    if (audio) {
+      audio.play().catch(() => console.log('User interaction required to play audio.'));
+    }
+    onClose();
+  };
 
   return (
     <Box
@@ -62,13 +79,44 @@ export default function LandingPage() {
       px={6}
       fontFamily="'Comic Sans MS', 'Comic Sans', cursive"
     >
-      {/* Fixed Crying Guy GIF Above Subway Surfers */}
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalBody
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            py={6}
+          >
+            <Heading size="md" mb={4}>
+              Enable Sound
+            </Heading>
+            <Text mb={6}>
+              Click below to enable sound and enjoy the full experience!
+            </Text>
+            <Button
+              onClick={handleEnableSound}
+              bgGradient="linear(to-r, green.400, teal.400)"
+              color="white"
+              _hover={{
+                bgGradient: 'linear(to-r, teal.400, green.400)',
+                transform: 'scale(1.1)',
+              }}
+            >
+              Enable Sound
+            </Button>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
       <motion.img
         src="/images/cryingguy.gif"
         alt="Crying Guy"
         style={{
           position: 'fixed',
-          bottom: '200px', // Higher position
+          bottom: '200px',
           right: '20px',
           width: '150px',
           height: 'auto',
@@ -84,7 +132,28 @@ export default function LandingPage() {
         }}
       />
 
-      {/* Fixed Subway Surfer GIF */}
+      {/* Add mewing.gif above the crying guy */}
+      <motion.img
+        src="/images/mewing.gif"
+        alt="Mewing"
+        style={{
+          position: 'fixed',
+          bottom: '380px',
+          right: '20px',
+          width: '100px',
+          height: 'auto',
+          zIndex: 1002,
+        }}
+        animate={{
+          scale: [1, 1.2, 1],
+        }}
+        transition={{
+          duration: 1,
+          repeat: Infinity,
+          repeatType: 'loop',
+        }}
+      />
+
       <img
         src="/images/subway-surfers.gif"
         alt="Subway Surfer"
@@ -98,7 +167,6 @@ export default function LandingPage() {
         }}
       />
 
-      {/* Stacked Gifs on Bottom-Left Corner */}
       <Box
         position="fixed"
         bottom="20px"
@@ -141,16 +209,19 @@ export default function LandingPage() {
             repeatType: 'loop',
           }}
         />
+        {/* Add granolobar.webp above the dancing Spongebob */}
+        <img
+          src="/images/granolobar.webp"
+          alt="Granola Bar"
+          style={{
+            width: '150px',
+            height: 'auto',
+          }}
+        />
       </Box>
 
-      {/* Main Content */}
       <VStack spacing={6} textAlign="center" zIndex={1}>
-        {/* Heading Section */}
-        <Heading
-          size="2xl"
-          fontWeight="bold"
-          fontFamily="'Comic Sans MS', 'Comic Sans', cursive"
-        >
+        <Heading size="2xl" fontWeight="bold">
           We R{' '}
           <motion.span
             style={{
@@ -172,13 +243,8 @@ export default function LandingPage() {
             Cooked
           </motion.span>
         </Heading>
-        <Text
-          fontSize="lg"
-          color="white"
-          transform="rotate(-5deg)"
-          textShadow="2px 2px 5px rgba(0, 0, 0, 0.6)"
-        >
-             Welcome to the ultimate challenge for Computer Science students. Apply to as many internships as possible
+        <Text fontSize="lg" color="white" transform="rotate(-5deg)">
+          Welcome to the ultimate challenge for Computer Science students. Apply to as many internships as possible
           while fighting off distractions like memes, viral videos, and brainrot-inducing chaos. Are you ready to
           prove yourself?
         </Text>
@@ -217,60 +283,52 @@ export default function LandingPage() {
         </SignedOut>
       </VStack>
 
-     {/* Rejection Emails Section */}
-<Text
-  fontSize="2xl"
-  fontWeight="bold"
-  textAlign="center"
-  mb={4}
-  transform="rotate(-10deg)"
-  textShadow="2px 2px 5px rgba(0, 0, 0, 0.5)"
-  color="red.300"
->
-  This is you! 🥲
-</Text>
-<Box
-  w="90%"
-  maxW="1200px"
-  mx="auto"
-  borderRadius="lg"
-  overflow="hidden"
-  position="relative"
-  boxShadow="0 8px 15px rgba(0, 0, 0, 0.5)"
-  bg="whiteAlpha.200"
-  p={4}
->
-  <AnimatePresence>
-    <motion.img
-      key={rejectionEmails[imageIndex]}
-      src={rejectionEmails[imageIndex]}
-      alt={`Rejection Email ${imageIndex}`}
-      initial={{ x: 100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: -100, opacity: 0 }}
-      transition={{
-        duration: 1.2, // Increased duration for smoother transition
-        ease: 'easeInOut', // Smooth easing function
-      }}
-      style={{
-        display: 'block',
-        width: '100%',
-        height: 'auto',
-        borderRadius: '10px', // Add some rounding for a softer look
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', // Subtle shadow
-      }}
-    />
-  </AnimatePresence>
-</Box>
-
-      {/* Footer */}
-      <Box as="footer" textAlign="center" pt={8} zIndex={1}>
-        <Text fontSize="sm" color="whiteAlpha.800">
-          © 2024 We R Cooked. All rights reserved.
-        </Text>
+      {/* Rejection Emails Section */}
+      <Text
+        fontSize="2xl"
+        fontWeight="bold"
+        textAlign="center"
+        mb={4}
+        transform="rotate(-10deg)"
+        textShadow="2px 2px 5px rgba(0, 0, 0, 0.5)"
+        color="red.300"
+      >
+        This is you! 🥲
+      </Text>
+      <Box
+        w="90%"
+        maxW="1200px"
+        mx="auto"
+        borderRadius="lg"
+        overflow="hidden"
+        position="relative"
+        boxShadow="0 8px 15px rgba(0, 0, 0, 0.5)"
+        bg="whiteAlpha.200"
+        p={4}
+      >
+        <AnimatePresence>
+          <motion.img
+            key={rejectionEmails[imageIndex]}
+            src={rejectionEmails[imageIndex]}
+            alt={`Rejection Email ${imageIndex}`}
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -100, opacity: 0 }}
+            transition={{
+              duration: 1.2,
+              ease: 'easeInOut',
+            }}
+            style={{
+              display: 'block',
+              width: '100%',
+              height: 'auto',
+              borderRadius: '10px',
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)',
+            }}
+          />
+        </AnimatePresence>
       </Box>
 
-      {/* Keyframe Animations */}
       <style jsx global>{`
         @keyframes gradientAnimation {
           0% {

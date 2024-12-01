@@ -1,48 +1,30 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
+"use client";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Heading,
   Text,
   VStack,
+  Button,
   useToast,
-  useColorModeValue,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
   ChakraProvider,
   extendTheme,
-} from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
-import { db, auth } from '../../firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { useAuth } from '@clerk/nextjs';
-import { signInWithCustomToken } from 'firebase/auth';
-import DinoGame from '../lib/DinoGame'; // Import the new React component
-import FAANGTable from '@/components/FAANGTable';
-import { motion } from 'framer-motion';
-import IncomingCall from '../IncomingCall/IncomingCall';
-
-const contacts = [
-  {
-    name: 'FreakBob',
-    message: 'I miss you ❤️',
-    image: '/images/freakbob.jpg',
-  },
-  {
-    name: 'John Pork',
-    message: 'Can you please give me my kids back?',
-    image: '/images/johnpork.jpeg',
-  },
-  {
-    name: 'Karen',
-    message: 'I need to speak to your manager.',
-    image: '/images/karen.webp',
-  },
-  {
-    name: 'GigaChad',
-    message: 'Let’s hit the gym, bro!',
-    image: '/images/Gigachad.webp',
-  },
-];
+} from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import { db, auth } from "../../firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { useAuth } from "@clerk/nextjs";
+import { signInWithCustomToken } from "firebase/auth";
+import DinoGame from "../lib/DinoGame";
+import FAANGTable from "@/components/FAANGTable";
+import { motion } from "framer-motion";
+import IncomingCall from "../IncomingCall/IncomingCall";
 
 const theme = extendTheme({
   styles: {
@@ -55,80 +37,87 @@ const theme = extendTheme({
 });
 
 const DashboardPage = () => {
-
-  const [milliseconds, setMilliseconds] = useState(0);
-  const [notification, setNotification] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(60); // Timer starts at 60 seconds
   const [auraScore, setAuraScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false); // Tracks whether the game has started
+  const [scamModal, setScamModal] = useState(false); // Tracks scam modal visibility
+  const [rejectModal, setRejectModal] = useState(false); // Tracks rejection modal visibility
   const { userId, getToken } = useAuth();
   const router = useRouter();
   const toast = useToast();
+  const audioRef = useRef(null); // Reference for the audio element
+  const notificationSoundRef = useRef(null); // Reference for notification sound
+  const [notification, setNotification] = useState(null); // For notifications
 
-  // Play notification sound
-  const playSound = () => {
-    const audio = new Audio('/sounds/samsung.mp3');
-    audio.play();
+  const contacts = [
+    { name: "FreakBob", message: "I miss you ❤️", image: "/images/freakbob.jpg" },
+    { name: "John Pork", message: "Can you please give me my kids back?", image: "/images/johnpork.jpeg" },
+    { name: "Karen", message: "I need to speak to your manager.", image: "/images/karen.webp" },
+    { name: "GigaChad", message: "Let’s hit the gym, bro!", image: "/images/Gigachad.webp" },
+  ];
+
+  const startGame = () => {
+    setHasStarted(true);
+    if (audioRef.current) {
+      audioRef.current.play().catch((err) => console.error("Audio playback failed:", err));
+    }
   };
 
-  // Show a notification at random intervals
+  // Timer logic
   useEffect(() => {
-    const notificationInterval = setInterval(() => {
-      const randomContact = contacts[Math.floor(Math.random() * contacts.length)];
-      setNotification(randomContact);
-      playSound();
-      setTimeout(() => setNotification(null), 1500);
-    }, 15000);
-    return () => clearInterval(notificationInterval);
-  }, []);
-
-  const [timeLeft, setTimeLeft] = useState(60); // Start at 30 seconds
-const [isRunning, setIsRunning] = useState(true);
-
-useEffect(() => {
-  if (isRunning) {
-    const timer = setInterval(() => {
-      setTimeLeft((prevTimeLeft) => {
-        if (prevTimeLeft <= 0) {
-          clearInterval(timer);
-          saveScore(); // Save the score when the timer reaches zero
-          redirectToEndScreen();
-          return 0;
-        }
-        return prevTimeLeft - 1; // Decrease by 1 second
-      });
-    }, 1000); // Update every second
-
-    return () => clearInterval(timer); // Clear the interval on component unmount
-  }
-}, [isRunning]);
-
-  useEffect(() => {
-    if (timeLeft === 0 && milliseconds === 0) {
-      setIsRunning(false);
+    if (hasStarted && timeLeft > 0) {
+      const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+      return () => clearInterval(timer);
+    } else if (timeLeft === 0) {
       saveScore();
       redirectToEndScreen();
     }
-  }, [timeLeft, milliseconds]);
+  }, [hasStarted, timeLeft]);
 
-  // Add background music
+  // Notification logic
   useEffect(() => {
-    const audio = new Audio('/sounds/skibidisong.mp3');
-    audio.loop = true;
-    audio.play().catch((err) => console.warn('Autoplay failed:', err));
+    if (hasStarted) {
+      const notificationInterval = setInterval(() => {
+        const randomContact = contacts[Math.floor(Math.random() * contacts.length)];
+        setNotification(randomContact);
 
-    return () => {
-      audio.pause();
-      audio.currentTime = 0;
+        // Play notification sound
+        if (notificationSoundRef.current) {
+          notificationSoundRef.current.play().catch((err) => console.error("Notification sound error:", err));
+        }
+
+        setTimeout(() => setNotification(null), 4000); // Hide notification after 4 seconds
+      }, 8000); // Show a new notification every 15 seconds
+      return () => clearInterval(notificationInterval);
+    }
+  }, [hasStarted]);
+
+  // Fetch high score from Firebase
+  useEffect(() => {
+    const fetchHighScore = async () => {
+      if (!userId) return;
+      try {
+        const userRef = doc(db, "leaderboard", userId);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          setHighScore(userDoc.data().highScore || 0);
+        }
+      } catch (err) {
+        console.error("Error fetching high score:", err);
+      }
     };
-  }, []);
 
-  // Sign into Firebase with Clerk
+    fetchHighScore();
+  }, [userId]);
+
+  // Firebase authentication
   const signIntoFirebase = async () => {
     try {
-      const token = await getToken({ template: 'integration_firebase' });
+      const token = await getToken({ template: "integration_firebase" });
       await signInWithCustomToken(auth, token);
-      console.log('Signed in to Firebase');
     } catch (error) {
-      console.error('Error signing in to Firebase:', error);
+      console.error("Error signing in to Firebase:", error);
     }
   };
 
@@ -136,14 +125,12 @@ useEffect(() => {
     if (userId) signIntoFirebase();
   }, [userId]);
 
-  // Save score to Firestore
   const saveScore = async () => {
     if (!userId) return;
     try {
-      const userRef = doc(db, 'leaderboard', userId);
+      const userRef = doc(db, "leaderboard", userId);
       const userDoc = await getDoc(userRef);
       const newHighScore = Math.max(auraScore, userDoc.exists() ? userDoc.data().highScore : 0);
-
       await setDoc(
         userRef,
         {
@@ -154,152 +141,188 @@ useEffect(() => {
         },
         { merge: true }
       );
-
       setHighScore(newHighScore);
-
       toast({
-        title: 'Score Saved!',
+        title: "Score Saved!",
         description: `Your Aura Score: ${auraScore}, High Score: ${newHighScore}`,
-        status: 'success',
+        status: "success",
         duration: 5000,
         isClosable: true,
-        position: 'top-right',
+        position: "top-right",
       });
     } catch (err) {
-      console.error('Error saving score:', err);
+      console.error("Error saving score:", err);
     }
   };
 
-  // Redirect to End Screen
   const redirectToEndScreen = () => {
     const queryParams = new URLSearchParams({
       auraScore: auraScore.toString(),
       highScore: highScore.toString(),
     }).toString();
-
     router.push(`/end-screen?${queryParams}`);
   };
 
-  const getTimerColor = () => {
-    if (timeLeft <= 10) return 'red.400';
-    if (timeLeft <= 30) return 'orange.400';
-    return 'green.400';
+  const handleTaskComplete = () => {
+    const outcome = Math.random();
+    if (outcome < 0.2) {
+      // Scam outcome
+      setAuraScore((prev) => prev - 100); // No Math.max, allow negative values
+      setScamModal(true);
+    } else if (outcome < 0.4) {
+      // Instant rejection outcome
+      setAuraScore((prev) => prev - 300); // No Math.max, allow negative values
+      setRejectModal(true);
+    } else {
+      // Success outcome
+      setAuraScore((prev) => prev + 100);
+      toast({
+        title: "Task Completed!",
+        description: "You gained 100 Aura Points!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
   };
 
   return (
     <ChakraProvider theme={theme}>
-      <Box minH="100vh" bgGradient="linear(to-br, purple.800, pink.600)" p={6} position="relative">
-        {/* Notification */}
-       {/* Notification */}
-{notification && (
-  <motion.div
-    initial={{ y: -100, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    exit={{ y: -100, opacity: 0 }}
-    transition={{ duration: 0.5 }}
-    style={{
-      position: 'fixed',
-      top: '20px', // Adjusted to top of the screen
-      left: '50%',
-      transform: 'translateX(-50%)',
-      zIndex: 1000,
-      background: 'white',
-      padding: '20px 30px',
-      borderRadius: '20px',
-      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '20px',
-      maxWidth: '90%', // Ensure it doesn't overflow
-      width: 'auto', // Adjust width based on content
-    }}
-  >
-    <img
-      src={notification.image}
-      alt={notification.name}
-      style={{
-        width: '60px', // Slightly smaller for top placement
-        height: '60px',
-        borderRadius: '50%',
-        objectFit: 'cover',
-      }}
-    />
-    <Box>
-      <Text fontWeight="bold" fontSize="lg">
-        {notification.name}
-      </Text>
-      <Text fontSize="md" color="gray.700">
-        {notification.message}
-      </Text>
-    </Box>
-  </motion.div>
-)}
+      <Box minH="100vh" bgGradient="linear(to-br, purple.800, pink.600)" p={6}>
+        {/* Audio Elements */}
+        <audio ref={audioRef} src="/sounds/skibidisong.mp3" loop />
+        <audio ref={notificationSoundRef} src="/sounds/samsung.mp3" />
 
-<Box
-  position="fixed"
-  bottom={20}
-  right={20}
-  background="black"
-  padding="20px 40px"
-  borderRadius="20px"
-  boxShadow="0 0 20px limegreen"
-  zIndex={1500}
->
-  <Text
-    fontSize="6xl"
-    fontWeight="extrabold"
-    color={getTimerColor()}
-    textShadow="0 0 20px rgba(0, 255, 0, 0.9), 0 0 40px limegreen"
-  >
-    {`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}
-  </Text>
-</Box>
+        {/* Scam Modal */}
+        <Modal isOpen={scamModal} onClose={() => setScamModal(false)} isCentered>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Scammed! 😭</ModalHeader>
+            <ModalBody>
+              <Text>You fell for a scam and lost 100 Aura Points. Be more careful next time!</Text>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="red" onClick={() => setScamModal(false)}>
+                Okay
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
 
+        {/* Rejection Modal */}
+        <Modal isOpen={rejectModal} onClose={() => setRejectModal(false)} isCentered>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Rejected! ❌</ModalHeader>
+            <ModalBody>
+              <Text>You were instantly rejected and lost 300 Aura Points. Better luck next time!</Text>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="red" onClick={() => setRejectModal(false)}>
+                Okay
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
 
-        {/* Dashboard Content */}
-        <VStack spacing={8} align="stretch">
-          <Heading size="2xl" textAlign="center" mb={6} textShadow="2px 2px #ff00ff">
-            ⚡ Aura Dashboard ⚡
-          </Heading>
-          <Heading size="lg" textAlign="center" mb={6}>
-            Aura Score: {auraScore} 🌀 
-          </Heading>
-          <IncomingCall />
-
-          <FAANGTable
-  addAuraPoints={(points) => {
-    setAuraScore((prev) => prev + points);
-    toast({
-      title: 'Task Completed!',
-      description: `You gained ${points} Aura Points!`,
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-      position: 'top-right',
-    });
-  }}
-/>
-
-
-          {/* DinoGame Section */}
+        {/* Start Cooking Button */}
+        {!hasStarted && (
           <Box
             position="fixed"
-            bottom="20px"
-            left="20px"
-            width="300px"
-            height="200px"
+            top="50%"
+            left="50%"
+            transform="translate(-50%, -50%)"
             bg="white"
-            borderRadius="lg"
-            boxShadow="0px 4px 10px rgba(0, 0, 0, 0.3)"
-            zIndex={1000}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            p={2}
+            p={8}
+            borderRadius="20px"
+            textAlign="center"
+            boxShadow="0 0 30px rgba(0, 0, 0, 0.5)"
+            zIndex={2000}
           >
-            <DinoGame />
+            <Heading size="lg" mb={4} color="purple.700">
+              Ready to Start Cooking? 🍳
+            </Heading>
+            <Button colorScheme="teal" size="lg" onClick={startGame}>
+              Start Cooking!
+            </Button>
           </Box>
-        </VStack>
+        )}
+
+        {/* Timer */}
+        {hasStarted && (
+          <Box
+            position="fixed"
+            bottom={20}
+            right={20}
+            bg="black"
+            p="20px 40px"
+            borderRadius="20px"
+            zIndex={2000}
+            boxShadow="0 0 20px limegreen"
+          >
+            <Text fontSize="6xl" fontWeight="extrabold" color="white" textAlign="center">
+              {timeLeft}s
+            </Text>
+          </Box>
+        )}
+
+        {/* Notifications */}
+        {notification && (
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            style={{
+              position: "fixed",
+              top: "10%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "white",
+              padding: "20px",
+              borderRadius: "10px",
+              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)",
+              zIndex: 3000,
+              display: "flex",
+              alignItems: "center",
+              gap: "15px",
+              maxWidth: "400px",
+              width: "90%",
+            }}
+          >
+            <img
+              src={notification.image}
+              alt={notification.name}
+              style={{
+                width: "50px",
+                height: "50px",
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
+            <Box>
+              <Text fontWeight="bold">{notification.name}</Text>
+              <Text>{notification.message}</Text>
+            </Box>
+          </motion.div>
+        )}
+
+        {/* Main Content */}
+        {hasStarted && (
+          <VStack spacing={8} align="stretch">
+            <Heading size="2xl" textAlign="center">
+              ⚡ Aura Dashboard ⚡
+            </Heading>
+            <Heading size="lg" textAlign="center">
+              Aura Score: {auraScore} 🌀 | High Score: {highScore} 🌟
+            </Heading>
+            <IncomingCall />
+            <FAANGTable addAuraPoints={handleTaskComplete} />
+            <Box position="fixed" bottom={20} left={20} width="400px" height="300px" p={4}>
+              <DinoGame />
+            </Box>
+          </VStack>
+        )}
       </Box>
     </ChakraProvider>
   );
