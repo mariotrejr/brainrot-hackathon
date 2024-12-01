@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Box,
   Table,
@@ -10,10 +10,10 @@ import {
   Th,
   Td,
   Heading,
-  Image,
   Spinner,
   Text,
 } from '@chakra-ui/react';
+import Image from 'next/image'; // Use Next.js optimized Image
 import { motion } from 'framer-motion';
 import { db, auth } from '../../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
@@ -28,21 +28,22 @@ const LeaderboardPage = () => {
   const { userId, getToken } = useAuth();
   const userRowRef = useRef(null);
 
-  const signIntoFirebase = async () => {
+  // Firebase Sign-In with token
+  const signIntoFirebase = useCallback(async () => {
     try {
       const token = await getToken({ template: 'integration_firebase' });
       await signInWithCustomToken(auth, token);
       console.log('Signed in to Firebase');
     } catch (error) {
-      console.error('Error signing in to Firebase:', error);
+      console.error('Error signing into Firebase:', error);
     }
-  };
+  }, [getToken]);
 
   useEffect(() => {
     if (userId) {
       signIntoFirebase();
     }
-  }, [userId]);
+  }, [userId, signIntoFirebase]);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -58,14 +59,19 @@ const LeaderboardPage = () => {
 
         const enrichedLeaderboard = await Promise.all(
           leaderboardData.map(async (entry) => {
-            const response = await fetch(`/api/leaderboard?userId=${entry.userId}`);
-            const userData = await response.json();
+            try {
+              const response = await fetch(`/api/leaderboard?userId=${entry.userId}`);
+              const userData = await response.json();
 
-            return {
-              ...entry,
-              userName: userData.firstName || userData.lastName || 'Unknown User',
-              userImage: userData.imageUrl,
-            };
+              return {
+                ...entry,
+                userName: userData.firstName || userData.lastName || 'Unknown User',
+                userImage: userData.imageUrl || '/images/default-user.png',
+              };
+            } catch (error) {
+              console.error('Error fetching user data:', error);
+              return { ...entry, userName: 'Unknown User', userImage: '/images/default-user.png' };
+            }
           })
         );
 
@@ -154,12 +160,11 @@ const LeaderboardPage = () => {
                   <Image
                     src={entry.userImage}
                     alt={entry.userName}
-                    boxSize="50px"
-                    borderRadius="full"
-                    mr={4}
-                    border="2px solid white"
+                    width={50}
+                    height={50}
+                    style={{ borderRadius: '50%', border: '2px solid white' }}
                   />
-                  <Text>{entry.userName}</Text>
+                  <Text ml={4}>{entry.userName}</Text>
                 </Box>
               </Td>
               <Td textAlign="center" fontWeight="bold" color="yellow.300">
